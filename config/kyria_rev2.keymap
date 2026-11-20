@@ -2,26 +2,43 @@
  * Copyright (c) 2021 Jaromír Malenko
  *
  * SPDX-License-Identifier: MIT
+ *
+ * Reverse-mapped for a GERMAN (de nodeadkeys) OS layout. The OS is German on
+ * every machine, but the keycaps/diagram show US-QWERTY, so each binding emits
+ * the German-PHYSICAL key that produces the US character shown in the diagram.
+ * Layout-independent keys (letters except y/z, digits, modifiers, arrows,
+ * F-keys, media, bluetooth) are unchanged.
+ *
+ *   y->Z  z->Y   "->AT  #->BSLH  &->CARET  '->PIPE  (->STAR  )->LPAR
+ *   *->LS(RBKT)  +->RBKT  -->FSLH  /->AMPS  :->GT  ;->LT  =->LS(N0)
+ *   ?->UNDER  @->RA(Q)  [->RA(N8)  \->RA(MINUS)  ]->RA(N9)  ^->GRAVE
+ *   _->LS(FSLH)  `->PLUS  {->RA(N7)  |->RA(INT1)  }->RA(N0)  ~->RA(RBKT)
+ *   <->INT1  >->LS(INT1)
+ *   ä->SQT  ö->SEMI  ü->LBKT  ß->MINUS  Ä->LS(SQT)  Ö->LS(SEMI)  Ü->LS(LBKT)  €->RA(E)
  */
 
 #include <behaviors.dtsi>
 #include <dt-bindings/zmk/keys.h>
-#include <dt-bindings/zmk/bt.h>  /*changes*/
+#include <dt-bindings/zmk/bt.h>
 
-#define BASE  0
-#define NAV   1
-#define NUM   2
-#define FUN   3
+#define BASE   0
+#define NAV    1
+#define NUM    2
+#define FUN    3
+#define UMLAUT 4
 #define PREV_WORD LC(LEFT)
 #define NEXT_WORD LC(RIGHT)
 #define BEG_DOC   LC(HOME)
-#define END_DOC   LC(END)/*                            KEY POSITIONS
+#define END_DOC   LC(END)
+
+/* Key positions (referenced by the combos below).
   ╭────────────────────────╮                 ╭────────────────────────╮
   │  0   1   2   3   4   5 │                 │  6   7   8   9  10  11 │
   │ 12  13  14  15  16  17 ╰───────╮ ╭───────╯ 18  19  20  21  22  23 │
   │ 24  25  26  27  28  29  30  31 │ │ 32  33  34  35  36  37  38  39 │
   ╰───────────╮ 40  41  42  43  44 │ │ 45  46  47  48  49 ╭───────────╯
               ╰────────────────────╯ ╰────────────────────╯            */
+
 / {
     combos {
         compatible = "zmk,combos";
@@ -29,7 +46,7 @@
         combo_grave {
             timeout-ms = <50>;
             key-positions = <0 13>;
-            bindings = <&kp GRAVE>;
+            bindings = <&kp PLUS>;
         };
 
         combo_exclamation {
@@ -41,13 +58,13 @@
         combo_at {
             timeout-ms = <50>;
             key-positions = <2 14>;
-            bindings = <&kp AT>;
+            bindings = <&kp RA(Q)>;
         };
 
         combo_hash {
             timeout-ms = <50>;
             key-positions = <3 15>;
-            bindings = <&kp HASH>;
+            bindings = <&kp BSLH>;
         };
 
         combo_dollar {
@@ -65,82 +82,80 @@
         combo_caret {
             timeout-ms = <50>;
             key-positions = <6 18>;
-            bindings = <&kp CARET>;
+            bindings = <&kp GRAVE>;
         };
 
         combo_ampersand {
             timeout-ms = <50>;
             key-positions = <7 19>;
-            bindings = <&kp AMPS>;
+            bindings = <&kp CARET>;
         };
 
         combo_asterisk {
             timeout-ms = <50>;
             key-positions = <8 20>;
-            bindings = <&kp STAR>;
+            bindings = <&kp LS(RBKT)>;
         };
 
         combo_left_parenthesis {
             timeout-ms = <50>;
             key-positions = <9 21>;
-            bindings = <&kp LPAR>;
+            bindings = <&kp STAR>;
         };
 
         combo_right_parenthesis {
             timeout-ms = <50>;
             key-positions = <10 22>;
-            bindings = <&kp RPAR>;
+            bindings = <&kp LPAR>;
         };
 
         combo_minus {
             timeout-ms = <50>;
             key-positions = <11 23>;
-            bindings = <&kp MINUS>;
+            bindings = <&kp FSLH>;
         };
 
         combo_tilde {
             timeout-ms = <50>;
             key-positions = <12 24>;
-            bindings = <&kp TILDE>;
+            bindings = <&kp RA(RBKT)>;
         };
 
         combo_plus {
             timeout-ms = <50>;
             key-positions = <21 37>;
-            bindings = <&kp PLUS>;
+            bindings = <&kp RBKT>;
         };
 
         combo_equal {
             timeout-ms = <50>;
             key-positions = <22 38>;
-            bindings = <&kp EQUAL>;
+            bindings = <&kp LS(N0)>;
         };
 
         combo_underscore {
             timeout-ms = <50>;
             key-positions = <23 39>;
-            bindings = <&kp UNDER>;
+            bindings = <&kp LS(FSLH)>;
         };
 
         combo_clear_bt {
             timeout-ms = <50>;
             key-positions = <30 31>;
-            bindings = <&bt BT_CLR>;   
+            bindings = <&bt BT_CLR>;
         };
 
         combo_bt_prev {
             timeout-ms = <50>;
             key-positions = <43 44>;
-            bindings = <&bt BT_PRV>;   
+            bindings = <&bt BT_PRV>;
         };
 
         combo_bt_next {
             timeout-ms = <50>;
             key-positions = <45 46>;
-            bindings = <&bt BT_NXT>;   
+            bindings = <&bt BT_NXT>;
         };
-
-        
     };
 };
 
@@ -164,24 +179,35 @@
         compatible = "zmk,keymap";
 
         default_layer {
-            /* -------------------------------------------------------------                                            -------------------------------------------------------------
-   |    ESC  |    Q    |    W    |    E    |    R    |    T    |                                            |    Y    |    U    |    I    |    O    |    P    |    \    |
-   |    TAB  |    A    |    S    |    D    |    F    |    G    |--------------------    --------------------|    H    |    J    |    K    |    L    |    ;    |    '    |
-   |    SHIFT|    Z    |    X    |    C    |    V    |    B    |    TAB  |    ESC  |    |    BSCP |   DEL   |    N    |    M    |    ,    |    .    |    /    |   CTRL  |
-   ------------------------------|   CTRL  |   GUI   |   ALT   |   SPACE |    num  |    |    nav  |   RET   |   ALT   |   CTRL  |  rotary |------------------------------
-                                 ---------------------------------------------------    ---------------------------------------------------                               */
-
+            /*
+            ╭────────────────────────────────────╮                         ╭────────────────────────────────────╮
+            │ ESC    Q     W     E     R     T   │                         │  Y     U     I     O     P    BSPC │
+            │ TAB    A     S     D     F     G   ╰───────────╮ ╭───────────╯  H     J     K     L     ;     '   │
+            │ GUI    Z     X     C     V     B     [     !   │ │  |     ]     N     M     ,     .     /     =   │
+            ╰─────────────────╮ CTRL  ALT   SHFT  RET    @   │ │  ?    SPC   ALT   CTRL  MUTE ╭─────────────────╯
+                              ╰──────────────────────────────╯ ╰──────────────────────────────╯
+            hold: RET→NUM · @→FUN · ?→UMLAUT · SPC→NAV
+            */
             bindings = <
-   &kp ESC   &kp Q   &kp W     &kp E     &kp R      &kp T                                                                         &kp Y      &kp U       &kp I    &kp O     &kp P  &kp BACKSPACE
-   &kp TAB   &kp A   &kp S     &kp D     &kp F      &kp G                                                                         &kp H      &kp J       &kp K    &kp L  &kp SEMI        &kp SQT
- &kp LGUI   &kp Z   &kp X     &kp C     &kp V      &kp B  &kp LEFT_BRACKET  &kp EXCLAMATION      &kp PIPE  &kp RIGHT_BRACKET     &kp N      &kp M   &kp COMMA  &kp DOT  &kp FSLH      &kp EQUAL
-                            &kp LCTRL  &kp LALT  &kp LSHFT         &lt 2 RET         &lt 3 AT  &kp QUESTION        &lt 1 SPACE  &kp RALT  &kp RCTRL  &kp C_MUTE
+   &kp ESC   &kp Q   &kp W     &kp E     &kp R      &kp T         &kp Z      &kp U       &kp I    &kp O     &kp P  &kp BACKSPACE
+   &kp TAB   &kp A   &kp S     &kp D     &kp F      &kp G         &kp H      &kp J       &kp K    &kp L  &kp LT        &kp PIPE
+ &kp LGUI   &kp Y   &kp X     &kp C     &kp V      &kp B  &kp RA(N8)  &kp EXCL      &kp RA(INT1)  &kp RA(N9)     &kp N      &kp M   &kp COMMA  &kp DOT  &kp AMPS      &kp LS(N0)
+                            &kp LCTRL  &kp LALT  &kp LSHFT         &lt 2 RET         &lt 3 RA(Q)  &lt 4 UNDER        &lt 1 SPACE  &kp RALT  &kp RCTRL  &kp C_MUTE
             >;
 
             sensor-bindings = <&inc_dec_kp C_VOL_UP C_VOL_DN>;
         };
 
         nav_layer {
+            /*
+            ╭────────────────────────────────────╮                         ╭────────────────────────────────────╮
+            │ ···                                │                         │       PgUp   ↑    PgDn             │
+            │ ···                                ╰───────────╮ ╭───────────╯ Home   ←     ↓     →    End        │
+            │ ···                                 ···   ···  │ │ ···   ···    ↖     ↞           ↠     ↘         │
+            ╰─────────────────╮ ···   ···   ···   ···   ···  │ │ ···   ···   ···   ···   ···  ╭─────────────────╯
+                              ╰──────────────────────────────╯ ╰──────────────────────────────╯
+            ··· transparent · ↞/↠ Ctrl+←/→ word · ↖/↘ Ctrl+Home/End
+            */
             bindings = <
  &trans   &none   &none   &none   &none   &none                                         &none     &kp PG_UP    &kp UP      &kp PG_DN        &none   &none
  &trans   &none   &none   &none   &none   &none                                      &kp HOME      &kp LEFT  &kp DOWN      &kp RIGHT      &kp END   &none
@@ -191,20 +217,56 @@
         };
 
         num_layer {
+            /*
+             ╭────────────────────────────────────╮                         ╭────────────────────────────────────╮
+             │  ]     !     @     #     $     %   │                         │  *     7     8     9     =     .   │
+             │  [     &     ^     (     )     |   ╰───────────╮ ╭───────────╯  +     4     5     6     ;     :   │
+             │ ···    ~     `     <     >     _     {     "   │ │ ···    }     -     1     2     3     /     \   │
+             ╰─────────────────╮ ···   ···   ···   ···   ···  │ │ ···   ···    0     ,    ···  ╭─────────────────╯
+                               ╰──────────────────────────────╯ ╰──────────────────────────────╯
+            ··· transparent
+            */
             bindings = <
- &kp RBKT   &kp EXCL     &kp AT  &kp HASH  &kp DLLR  &kp PRCNT                                   &kp STAR     &kp N7  &kp N8  &kp N9  &kp EQUAL    &kp DOT
- &kp LBKT   &kp AMPS  &kp CARET  &kp LPAR  &kp RPAR   &kp PIPE                                   &kp PLUS     &kp N4  &kp N5  &kp N6   &kp SEMI  &kp COLON
-   &trans  &kp TILDE  &kp GRAVE    &kp LT    &kp GT  &kp UNDER  &trans  &trans  &trans  &trans  &kp MINUS     &kp N1  &kp N2  &kp N3   &kp FSLH   &kp BSLH
+ &kp RA(N9) &kp EXCL  &kp RA(Q)  &kp BSLH  &kp DLLR  &kp PRCNT                                   &kp LS(RBKT)  &kp N7  &kp N8  &kp N9  &kp LS(N0)    &kp DOT
+ &kp RA(N8) &kp CARET &kp GRAVE   &kp STAR  &kp LPAR   &kp RA(INT1)                                &kp RBKT     &kp N4  &kp N5  &kp N6   &kp LT  &kp GT
+   &trans  &kp RA(RBKT) &kp PLUS  &kp INT1  &kp LS(INT1)  &kp LS(FSLH)  &kp RA(N7)  &kp AT  &trans  &kp RA(N0)  &kp FSLH     &kp N1  &kp N2  &kp N3   &kp AMPS   &kp RA(MINUS)
                                    &trans    &trans     &trans  &trans  &trans  &trans  &trans     &kp N0  &kp COMMA  &trans
             >;
         };
 
         fun_layer {
+            /*
+            ╭────────────────────────────────────╮                         ╭────────────────────────────────────╮
+            │ ···   F21   F22   F23   F24   ScLk │                         │ Vol+   F7    F8    F9   F12   Prev │
+            │ ···   F17   F18   F19   F20   PrSc ╰───────────╮ ╭───────────╯ Vol-   F4    F5    F6   F11   Play │
+            │ ···   F13   F14   F15   F16   Ins   ···   ···  │ │ ···   ···   Mute   F1    F2    F3   F10   Next │
+            ╰─────────────────╮ ···   ···   ···   ···   ···  │ │ ···   ···   ···   ···   ···  ╭─────────────────╯
+                              ╰──────────────────────────────╯ ╰──────────────────────────────╯
+            ··· transparent
+            */
             bindings = <
  &trans  &kp F21  &kp F22  &kp F23  &kp F24   &kp SLCK                                  &kp C_VOL_UP  &kp F7  &kp F8  &kp F9  &kp F12        &kp C_PREV
  &trans  &kp F17  &kp F18  &kp F19  &kp F20  &kp PSCRN                                  &kp C_VOL_DN  &kp F4  &kp F5  &kp F6  &kp F11  &kp C_PLAY_PAUSE
  &trans  &kp F13  &kp F14  &kp F15  &kp F16    &kp INS  &trans  &trans  &trans  &trans    &kp C_MUTE  &kp F1  &kp F2  &kp F3  &kp F10        &kp C_NEXT
                             &trans   &trans     &trans  &trans  &trans  &trans  &trans        &trans  &trans  &trans
+            >;
+        };
+
+        umlaut_layer {
+            /*
+            ╭────────────────────────────────────╮                         ╭────────────────────────────────────╮
+            │ ···    Ä     Ö     Ü     €    ···  │                         │ ···   ···   ···   ···   ···   ···  │
+            │ ···    ä     ö     ü     ß    ···  ╰───────────╮ ╭───────────╯ ···   ···   ···   ···   ···   ···  │
+            │ ···   ···   ···   ···   ···   ···   ···   ···  │ │ ···   ···   ···   ···   ···   ···   ···   ···  │
+            ╰─────────────────╮ ···   ···   ···   ···   ···  │ │ ···   ···   ···   ···   ···  ╭─────────────────╯
+                              ╰──────────────────────────────╯ ╰──────────────────────────────╯
+            ··· transparent · hold ? (right thumb)
+            */
+            bindings = <
+ &trans   &kp LS(SQT)  &kp LS(SEMI)  &kp LS(LBKT)  &kp RA(E)  &trans                                     &trans   &trans   &trans   &trans   &trans   &trans
+ &trans   &kp SQT      &kp SEMI      &kp LBKT      &kp MINUS  &trans                                     &trans   &trans   &trans   &trans   &trans   &trans
+ &trans   &trans       &trans        &trans        &trans     &trans  &trans  &trans  &trans  &trans  &trans  &trans   &trans   &trans   &trans   &trans
+                            &trans      &trans      &trans      &trans      &trans  &trans  &trans        &trans   &trans   &trans
             >;
         };
     };
